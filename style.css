@@ -1,11 +1,11 @@
 /* ============ TOKENS ============ */
-:root{
+:root{ /* color palette and design tokens */
   --pine-900:#173026;
   --pine-800:#1F3D2B;
   --pine-700:#2C4F38;
   --gold-600:#C68E17;
   --gold-500:#DAA520;
-  --clay-500:#B5502D;
+  --clay-500:#9c786c;
   --clay-400:#C9714F;
   --river-500:#4A7A8C;
   --mist-100:#F3EEE1;
@@ -25,7 +25,7 @@ body{
   font-family:'Inter',sans-serif;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
-}
+} /* prevent horizontal scroll due to shadows or borders */
 h1,h2,h3,h4{font-family:'Fraunces',serif;margin:0;font-weight:600;letter-spacing:-0.01em;}
 p{margin:0;line-height:1.55;}
 button{font-family:inherit;cursor:pointer;}
@@ -50,7 +50,7 @@ button{font-family:inherit;cursor:pointer;}
   padding:14px 28px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid rgba(255,255,255,0.08);
-}
+} /* nav is sticky so it stays on top when scrolling */
 .nav-brand{display:flex;align-items:center;gap:10px;}
 .nav-brand .mark{
   width:34px;height:34px;border-radius:50%;
@@ -58,7 +58,7 @@ button{font-family:inherit;cursor:pointer;}
   display:flex;align-items:center;justify-content:center;
   font-family:'Fraunces',serif;font-weight:700;color:var(--pine-900);font-size:1.05rem;
   flex-shrink:0;
-}
+} 
 .nav-brand span{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:600;}
 .nav-links{display:flex;gap:26px;align-items:center;}
 .nav-links a{
@@ -68,7 +68,7 @@ button{font-family:inherit;cursor:pointer;}
   font-weight:500;
   transition:color 0.2s;
   cursor:pointer;
-}
+} /* hover and active states for nav links */
 .nav-links a:hover, .nav-links a.active{color:var(--mist-50);}
 .nav-links a.active{border-bottom:2px solid var(--gold-500);padding-bottom:4px;}
 .admin-toggle{

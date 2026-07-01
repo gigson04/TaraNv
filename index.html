@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tara, NV! — Nueva Vizcaya Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="mark">NV</div>
+    <span>Tara, NV!</span>
+  </div>
+  <div class="nav-links">
+    <a onclick="showView('explore')" class="active" id="nav-explore">Explore</a>
+    <a onclick="scrollToMap()">Map</a>
+    <a onclick="showView('explore');document.getElementById('municipalities-section').scrollIntoView({behavior:'smooth'})">Municipalities</a>
+  </div>
+  <button class="admin-toggle" onclick="showView('admin')">🔒 Admin</button>
+</nav>
+
+<!-- ============ EXPLORE VIEW ============ -->
+<div id="explore-view">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Cagayan Valley · Philippines</div>
+          <h1>Everything worth<br>finding in <em>Nueva Vizcaya.</em></h1>
+          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong — organized by municipality, with the map pin and contact number already attached.</p>
+        </div>
+      </div>
+
+      <div class="route-wrap">
+        <svg class="route-svg" viewBox="0 0 1000 110" preserveAspectRatio="none">
+          <path class="route-path" d="M 10 70 C 150 20, 250 100, 400 60 S 650 10, 800 55 S 950 90, 990 40"></path>
+          <circle class="route-pin" cx="10" cy="70" r="5"></circle>
+          <text class="route-label" x="4" y="94">BAYOMBONG</text>
+          <circle class="route-pin" cx="400" cy="60" r="5"></circle>
+          <text class="route-label" x="368" y="42">KAYAPA</text>
+          <circle class="route-pin" cx="800" cy="55" r="5"></circle>
+          <text class="route-label" x="762" y="86">KASIBU</text>
+          <circle class="route-pin" cx="990" cy="40" r="5"></circle>
+          <text class="route-label" x="900" y="24">DUPAX</text>
+        </svg>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search a place, dish, or homestay...">
+        <button onclick="applyFilters()">Search</button>
+      </div>
+
+      <div class="chip-row" id="category-chips">
+        <button class="chip active" data-cat="all" onclick="setCategory('all',this)">All</button>
+        <button class="chip" data-cat="nature" onclick="setCategory('nature',this)">⛰ Nature</button>
+        <button class="chip" data-cat="heritage" onclick="setCategory('heritage',this)">🏛 Heritage</button>
+        <button class="chip" data-cat="food" onclick="setCategory('food',this)">🍲 Food</button>
+        <button class="chip" data-cat="accommodation" onclick="setCategory('accommodation',this)">🏠 Stay</button>
+        <button class="chip" data-cat="pasalubong" onclick="setCategory('pasalubong',this)">🛍 Pasalubong</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip-section" id="municipalities-section">
+    <div class="strip" id="muni-strip"></div>
+  </section>
+
+  <section class="section" id="listings-section">
+    <div class="section-head">
+      <h2>Listings</h2>
+      <span class="count-tag" id="result-count">— results</span>
+    </div>
+    <div class="grid" id="listings-grid"></div>
+  </section>
+
+  <section class="section map-section">
+    <div class="section-head">
+      <h2>See it on the map</h2>
+      <span class="count-tag mono">Leaflet + OpenStreetMap</span>
+    </div>
+    <div id="map"></div>
+  </section>
+
+  <footer>
+    <div><strong style="color:rgba(250,247,239,0.85)">Tara, NV!</strong> — a discovery directory, not a booking platform.</div>
+    <div class="mono" style="margin-top:6px;">Proposed sponsor: Nueva Vizcaya Provincial Tourism Office</div>
+  </footer>
+</div>
+
+<!-- ============ ADMIN VIEW ============ -->
+<div id="admin-view">
+  <div class="admin-gate" id="admin-gate">
+    <h2>Admin sign in</h2>
+    <p>This area is for the Tourism Office and listing managers only.</p>
+    <input type="password" id="admin-pass" placeholder="Enter access code" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button class="btn-primary" style="width:100%" onclick="checkAdmin()">Enter admin panel</button>
+    <div class="admin-hint">Prototype code: <strong>letsgo</strong></div>
+  </div>
+
+  <div class="admin-panel" id="admin-panel">
+    <div class="admin-header">
+      <div>
+        <div class="eyebrow">Admin</div>
+        <h2>Listings &amp; reviews management</h2>
+      </div>
+      <button class="btn-add" onclick="openListingForm()">+ Add listing</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total listings</div></div>
+      <div class="stat-card"><div class="num" id="stat-munis">15</div><div class="lbl">Municipalities</div></div>
+      <div class="stat-card"><div class="num" id="stat-reviews">0</div><div class="lbl">Total reviews</div></div>
+      <div class="stat-card"><div class="num" id="stat-pending">0</div><div class="lbl">Pending moderation</div></div>
+    </div>
+
+    <div class="admin-tabs">
+      <div class="admin-tab active" id="tab-listings" onclick="setAdminTab('listings')">Listings</div>
+      <div class="admin-tab" id="tab-reviews" onclick="setAdminTab('reviews')">Reviews <span class="pending-badge" id="tab-pending-badge">0</span></div>
+    </div>
+
+    <div id="admin-listings-tab">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Municipality</th><th>Category</th><th>Rating</th><th>Reviews</th><th>Actions</th></tr></thead>
+          <tbody id="admin-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admin-reviews-tab" style="display:none;">
+      <div class="table-wrap" id="mod-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DETAIL MODAL ============ -->
+<div class="overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div class="modal" id="detail-modal"></div>
+</div>
+
+<!-- ============ LISTING FORM MODAL ============ -->
+<div class="overlay" id="form-overlay" onclick="if(event.target===this)closeListingForm()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeListingForm()">✕</button>
+    <div class="modal-content">
+      <div class="eyebrow" id="form-title-eyebrow">New listing</div>
+      <h2 id="form-title">Add a listing</h2>
+      <div class="form-grid" style="margin-top:20px;">
+        <div class="full">
+          <label class="field-label">Place name</label>
+          <input type="text" id="f-name" placeholder="e.g. Sitio Nagbat Falls">
+        </div>
+        <div>
+          <label class="field-label">Municipality</label>
+          <select id="f-muni"></select>
+        </div>
+        <div>
+          <label class="field-label">Category</label>
+          <select id="f-cat">
+            <option value="nature">Nature</option>
+            <option value="heritage">Heritage</option>
+            <option value="food">Food</option>
+            <option value="accommodation">Accommodation</option>
+            <option value="pasalubong">Pasalubong</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Latitude</label>
+          <input type="text" id="f-lat" placeholder="16.4833">
+        </div>
+        <div>
+          <label class="field-label">Longitude</label>
+          <input type="text" id="f-lng" placeholder="121.1500">
+        </div>
+        <div class="full">
+          <label class="field-label">Contact number</label>
+          <input type="text" id="f-contact" placeholder="09XX-XXX-XXXX">
+        </div>
+        <div class="full">
+          <label class="field-label">Short blurb (shows on card)</label>
+          <input type="text" id="f-blurb" placeholder="One line description">
+        </div>
+        <div class="full">
+          <label class="field-label">Full description</label>
+          <textarea id="f-desc" rows="3" placeholder="Describe the place for travelers..."></textarea>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;">
+        <button class="btn-primary" onclick="saveListing()">Save listing</button>
+        <button class="icon-btn" onclick="closeListingForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toast-msg">Saved</span></div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -63,7 +63,7 @@
         <button class="chip" data-cat="nature" onclick="setCategory('nature',this)">⛰ Nature</button>
         <button class="chip" data-cat="heritage" onclick="setCategory('heritage',this)">🏛 Heritage</button>
         <button class="chip" data-cat="food" onclick="setCategory('food',this)">🍲 Food</button>
-        <button class="chip" data-cat="accommodation" onclick="setCategory('accommodation',this)">🏠 Home Stay</button>
+        <button class="chip" data-cat="accommodation" onclick="setCategory('accommodation',this)">🏠 Stay</button>
         <button class="chip" data-cat="pasalubong" onclick="setCategory('pasalubong',this)">🛍 Pasalubong</button>
       </div>
     </div>
@@ -90,8 +90,8 @@
   </section>
 
   <footer>
-    <div><strong style="color:rgba(250,247,239,0.85)">Tara, NV!</strong> a discovery directory, not a booking platform.</div>
-    <div class="mono" style="margin-top:6px;">Project Sponsor: Nueva Vizcaya Provincial Tourism Office</div>
+    <div><strong style="color:rgba(250,247,239,0.85)">Tara, NV!</strong> — a discovery directory, not a booking platform.</div>
+    <div class="mono" style="margin-top:6px;">Proposed sponsor: Nueva Vizcaya Provincial Tourism Office</div>
   </footer>
 </div>
 
@@ -129,7 +129,7 @@
     <div id="admin-listings-tab">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Name</th><th>Municipality</th><th>Category</th><th>Rating</th><th>Reviews</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Photo</th><th>Name</th><th>Municipality</th><th>Category</th><th>Rating</th><th>Reviews</th><th>Actions</th></tr></thead>
           <tbody id="admin-table-body"></tbody>
         </table>
       </div>
@@ -179,6 +179,12 @@
         <div>
           <label class="field-label">Longitude</label>
           <input type="text" id="f-lng" placeholder="121.1500">
+        </div>
+        <div class="full">
+          <label class="field-label">Photo</label>
+          <input type="file" id="f-image" accept="image/*" onchange="previewImage(event)">
+          <div id="image-preview-wrap"></div>
+          <div style="font-size:0.72rem;color:var(--ink-600);margin-top:6px;">Stored in this browser session only — for a real deployment this would upload to Supabase storage.</div>
         </div>
         <div class="full">
           <label class="field-label">Contact number</label>

@@ -74,6 +74,23 @@ let listings = [
    reviews:[]}
 ];
 
+let pendingImageData = null;
+
+function previewImage(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    pendingImageData = reader.result;
+    renderImagePreview(pendingImageData);
+  };
+  reader.readAsDataURL(file);
+}
+function renderImagePreview(src){
+  const wrap = document.getElementById('image-preview-wrap');
+  wrap.innerHTML = src ? `<img src="${src}" alt="Preview">` : '';
+}
+
 let nextId = 16;
 let currentCategory = "all";
 let currentMuni = "all";
@@ -179,10 +196,11 @@ function renderListings(){
     const meta = CAT_META[l.category];
     const avg = avgRating(l);
     const approvedCount = l.reviews.filter(r=>r.status==='approved').length;
+    const photoStyle = l.image ? `style="background-image:url('${l.image}')"` : '';
     return `
     <div class="card" style="animation-delay:${(i%6)*0.05}s" onclick="openDetail(${l.id})">
-      <div class="card-art ${meta.cls}">
-        ${meta.icon}
+      <div class="card-art ${l.image ? 'has-photo' : meta.cls}" ${photoStyle}>
+        ${l.image ? '' : meta.icon}
         <span class="stamp">${meta.label}</span>
       </div>
       <div class="card-body">
@@ -214,6 +232,7 @@ function initMap(){
   refreshMapMarkers();
 }
 function refreshMapMarkers(){
+  if(!markerLayer) return;
   markerLayer.clearLayers();
   listings.forEach(l=>{
     const meta = CAT_META[l.category];
@@ -237,9 +256,10 @@ function openDetail(id){
   const avg = avgRating(l);
 
   const modal = document.getElementById('detail-modal');
+  const photoStyle = l.image ? `style="background-image:url('${l.image}')"` : '';
   modal.innerHTML = `
     <button class="modal-close" onclick="closeDetail()">✕</button>
-    <div class="modal-hero ${meta.cls}">${meta.icon}</div>
+    <div class="modal-hero ${l.image ? 'has-photo' : meta.cls}" ${photoStyle}>${l.image ? '' : meta.icon}</div>
     <div class="modal-content">
       <div class="card-muni">${l.municipality}</div>
       <h2>${l.name}</h2>
@@ -356,6 +376,7 @@ function renderAdminTable(){
     const approvedCount = l.reviews.filter(r=>r.status==='approved').length;
     return `
     <tr>
+      <td class="thumb-cell">${l.image ? `<img src="${l.image}" alt="${l.name}">` : `<div class="thumb-placeholder">${meta.icon}</div>`}</td>
       <td><strong>${l.name}</strong></td>
       <td>${l.municipality}</td>
       <td><span class="tag-pill ${meta.cls}">${meta.label}</span></td>
@@ -420,6 +441,7 @@ function populateMuniSelect(){
 }
 function openListingForm(id){
   editingListingId = id || null;
+  document.getElementById('f-image').value = '';
   if(id){
     const l = listings.find(x=>x.id===id);
     document.getElementById('form-title').textContent = 'Edit listing';
@@ -432,12 +454,16 @@ function openListingForm(id){
     document.getElementById('f-contact').value = l.contact;
     document.getElementById('f-blurb').value = l.blurb;
     document.getElementById('f-desc').value = l.description;
+    pendingImageData = l.image || null;
+    renderImagePreview(pendingImageData);
   } else {
     document.getElementById('form-title').textContent = 'Add a listing';
     document.getElementById('form-title-eyebrow').textContent = 'New listing';
     ['f-name','f-lat','f-lng','f-contact','f-blurb','f-desc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-muni').value = MUNICIPALITIES[0];
     document.getElementById('f-cat').value = 'nature';
+    pendingImageData = null;
+    renderImagePreview(null);
   }
   document.getElementById('form-overlay').classList.add('show');
 }
@@ -461,10 +487,10 @@ function saveListing(){
 
   if(editingListingId){
     const l = listings.find(x=>x.id===editingListingId);
-    Object.assign(l, {name, municipality, category, lat, lng, contact, blurb, description});
+    Object.assign(l, {name, municipality, category, lat, lng, contact, blurb, description, image:pendingImageData});
     showToast('Listing updated');
   } else {
-    listings.push({id:nextId++, name, municipality, category, lat, lng, contact, blurb, description:description||blurb, reviews:[]});
+    listings.push({id:nextId++, name, municipality, category, lat, lng, contact, blurb, description:description||blurb, image:pendingImageData, reviews:[]});
     showToast('Listing added');
   }
   closeListingForm();

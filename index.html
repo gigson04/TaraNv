@@ -6,8 +6,6 @@
 <title>Tara, NV! — Nueva Vizcaya Directory</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,11 +14,10 @@
 <nav class="nav">
   <div class="nav-brand">
     <div class="mark">NV</div>
-    <span>Tara, NV!</span>
+    <span>Tara, Nueva Vizcaya!</span>
   </div>
   <div class="nav-links">
     <a onclick="showView('explore')" class="active" id="nav-explore">Explore</a>
-    <a onclick="scrollToMap()">Map</a>
     <a onclick="showView('explore');document.getElementById('municipalities-section').scrollIntoView({behavior:'smooth'})">Municipalities</a>
   </div>
   <button class="admin-toggle" onclick="showView('admin')">🔒 Admin</button>
@@ -35,7 +32,7 @@
         <div>
           <div class="eyebrow">Cagayan Valley · Philippines</div>
           <h1>Everything worth<br>finding in <em>Nueva Vizcaya.</em></h1>
-          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong — organized by municipality, with the map pin and contact number already attached.</p>
+          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong organized by municipality, with the map pin and contact number already attached.</p>
         </div>
       </div>
 
@@ -79,14 +76,6 @@
       <span class="count-tag" id="result-count">— results</span>
     </div>
     <div class="grid" id="listings-grid"></div>
-  </section>
-
-  <section class="section map-section">
-    <div class="section-head">
-      <h2>See it on the map</h2>
-      <span class="count-tag mono">Leaflet + OpenStreetMap</span>
-    </div>
-    <div id="map"></div>
   </section>
 
   <footer>

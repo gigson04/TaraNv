@@ -97,7 +97,6 @@ let currentMuni = "all";
 let currentSearch = "";
 let currentAdminTab = "listings";
 let editingListingId = null;
-let map, markerLayer;
 
 /* ============================================================
    INIT
@@ -106,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMuniStrip();
   populateMuniSelect();
   renderListings();
-  initMap();
   renderAdminTable();
   updateStats();
 });
@@ -119,10 +117,6 @@ function showView(view){
   document.getElementById('admin-view').style.display = view==='admin' ? 'block' : 'none';
   document.getElementById('nav-explore').classList.toggle('active', view==='explore');
   if(view==='admin'){ window.scrollTo({top:0}); }
-}
-function scrollToMap(){
-  showView('explore');
-  document.getElementById('map').scrollIntoView({behavior:'smooth'});
 }
 
 /* ============================================================
@@ -220,31 +214,6 @@ function renderListings(){
 }
 
 /* ============================================================
-   MAP
-   ============================================================ */
-function initMap(){
-  map = L.map('map', {scrollWheelZoom:false}).setView([16.48, 121.10], 10);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'&copy; OpenStreetMap contributors',
-    maxZoom:18
-  }).addTo(map);
-  markerLayer = L.layerGroup().addTo(map);
-  refreshMapMarkers();
-}
-function refreshMapMarkers(){
-  if(!markerLayer) return;
-  markerLayer.clearLayers();
-  listings.forEach(l=>{
-    const meta = CAT_META[l.category];
-    const marker = L.circleMarker([l.lat, l.lng], {
-      radius:8, color:'#173026', weight:2, fillColor:'#C68E17', fillOpacity:0.9
-    }).addTo(markerLayer);
-    marker.bindPopup(`<strong>${l.name}</strong><br><span style="font-size:12px;color:#5B5648;">${meta.label} · ${l.municipality}</span><br><a href="#" onclick="closeDetailIfOpen();openDetail(${l.id});return false;" style="font-size:12px;">View details →</a>`);
-  });
-}
-function closeDetailIfOpen(){}
-
-/* ============================================================
    DETAIL MODAL + REVIEWS
    ============================================================ */
 let activeListingId = null;
@@ -268,8 +237,9 @@ function openDetail(id){
         <div class="meta-item"><span class="eyebrow">Category</span>${meta.label}</div>
         <div class="meta-item"><span class="eyebrow">Contact</span>${l.contact}</div>
         <div class="meta-item"><span class="eyebrow">Rating</span><span class="stars">${starString(avg)}</span> ${avg?avg.toFixed(1):'—'}</div>
-        <div class="meta-item"><span class="eyebrow">Coordinates</span><span class="mono">${l.lat}, ${l.lng}</span></div>
       </div>
+
+      <a class="btn-maps" href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener">📍 Open in Google Maps</a>
 
       <div class="reviews-block">
         <h4>Traveler reviews <span class="review-count">(${approved.length})</span></h4>
@@ -496,7 +466,6 @@ function saveListing(){
   closeListingForm();
   renderAdminTable();
   renderListings();
-  refreshMapMarkers();
   updateStats();
 }
 function deleteListing(id){
@@ -504,7 +473,6 @@ function deleteListing(id){
   listings = listings.filter(x=>x.id!==id);
   renderAdminTable();
   renderListings();
-  refreshMapMarkers();
   updateStats();
   showToast('Listing deleted');
 }

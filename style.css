@@ -282,15 +282,14 @@ button{font-family:inherit;cursor:pointer;}
 .review-count{font-size:0.76rem;color:var(--ink-600);}
 .arrow-link{font-size:0.8rem;font-weight:600;color:var(--pine-800);}
 
-/* ============ MAP SECTION ============ */
-.map-section{background:var(--mist-100);}
-#map{
-  height:440px;
-  border-radius:var(--radius-card);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow-soft);
+.btn-maps{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:18px;
+  background:var(--river-500);color:#fff;
+  padding:11px 20px;border-radius:4px;font-weight:600;font-size:0.88rem;
+  text-decoration:none;transition:background 0.2s;
 }
-.leaflet-popup-content-wrapper{border-radius:4px;font-family:'Inter';}
+.btn-maps:hover{background:#3A6272;}
 
 /* ============ MODAL (detail) ============ */
 .overlay{

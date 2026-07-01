@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
    VIEW SWITCH
    ============================================================ */
 function showView(view){
-  document.getElementById('explore-view').style.display = view==='explore' ? '' : 'none';
-  document.getElementById('admin-view').style.display = view==='admin' ? '' : 'none';
+  document.getElementById('explore-view').style.display = view==='explore' ? 'block' : 'none';
+  document.getElementById('admin-view').style.display = view==='admin' ? 'block' : 'none';
   document.getElementById('nav-explore').classList.toggle('active', view==='explore');
   if(view==='admin'){ window.scrollTo({top:0}); }
 }

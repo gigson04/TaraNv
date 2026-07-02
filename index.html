@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -14,7 +15,7 @@
 <nav class="nav">
   <div class="nav-brand">
     <div class="mark">NV</div>
-    <span>Tara, Nueva Vizcaya!</span>
+    <span>Tara, NV!</span>
   </div>
   <div class="nav-links">
     <a onclick="showView('explore')" class="active" id="nav-explore">Explore</a>
@@ -32,7 +33,7 @@
         <div>
           <div class="eyebrow">Cagayan Valley · Philippines</div>
           <h1>Everything worth<br>finding in <em>Nueva Vizcaya.</em></h1>
-          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong organized by municipality, with the map pin and contact number already attached.</p>
+          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong — organized by municipality, with the map pin and contact number already attached.</p>
         </div>
       </div>
 
@@ -57,9 +58,9 @@
 
       <div class="chip-row" id="category-chips">
         <button class="chip active" data-cat="all" onclick="setCategory('all',this)">All</button>
-        <button class="chip" data-cat="nature" onclick="setCategory('nature',this)">🏞️ Nature</button>
-        <button class="chip" data-cat="heritage" onclick="setCategory('heritage',this)">🍀Heritage</button>
-        <button class="chip" data-cat="food" onclick="setCategory('food',this)">🍽️Food</button>
+        <button class="chip" data-cat="nature" onclick="setCategory('nature',this)">⛰ Nature</button>
+        <button class="chip" data-cat="heritage" onclick="setCategory('heritage',this)">🏛 Heritage</button>
+        <button class="chip" data-cat="food" onclick="setCategory('food',this)">🍲 Food</button>
         <button class="chip" data-cat="accommodation" onclick="setCategory('accommodation',this)">🏠 Stay</button>
         <button class="chip" data-cat="pasalubong" onclick="setCategory('pasalubong',this)">🛍 Pasalubong</button>
       </div>
@@ -67,7 +68,11 @@
   </section>
 
   <section class="strip-section" id="municipalities-section">
-    <div class="strip" id="muni-strip"></div>
+    <div class="strip-wrap">
+      <button class="strip-arrow strip-arrow-left" onclick="scrollMuniStrip(-1)" aria-label="Scroll left">‹</button>
+      <div class="strip" id="muni-strip"></div>
+      <button class="strip-arrow strip-arrow-right" onclick="scrollMuniStrip(1)" aria-label="Scroll right">›</button>
+    </div>
   </section>
 
   <section class="section" id="listings-section">

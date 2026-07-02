@@ -1,4 +1,22 @@
 /* ============================================================
+   SUPABASE CONFIG
+   ------------------------------------------------------------
+   1. Create a free project at https://supabase.com
+   2. Run supabase/schema.sql (provided separately) in the SQL Editor
+   3. Go to Project Settings > API and paste your values below
+   4. Reload the page — the app will now save everything for real
+   ============================================================ */
+const SUPABASE_URL = 'https://prpgukhyevelrfpnxbbh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_6lS20jSGKaBVjI6k78SS9w_TpF6ZpSt'; 
+
+let supabaseClient = null;
+let USE_SUPABASE = false;
+if(SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY' && window.supabase){
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  USE_SUPABASE = true;
+}
+
+/* ============================================================
    DATA
    ============================================================ */
 const MUNICIPALITIES = ["Alfonso Castañeda","Ambaguio","Aritao","Bagabag","Bambang","Bayombong","Diadi","Dupax del Norte","Dupax del Sur","Kasibu","Kayapa","Quezon","Santa Fe","Solano","Villaverde"];
@@ -11,20 +29,21 @@ const CAT_META = {
   pasalubong:{label:"Pasalubong", icon:"🛍", cls:"cat-pasalubong"}
 };
 
+// Demo/fallback data — used automatically when Supabase isn't configured yet,
+// so the prototype still works for presentations without setup.
 let listings = [
   {id:1, name:"Governor's Rapids", municipality:"Bayombong", category:"nature", lat:16.4833, lng:121.1500, contact:"0917-100-2001",
    blurb:"River rapids just outside the capital, popular for a quick afternoon dip.",
    description:"A stretch of the Magat River known for its clear rapids and rocky banks, a short ride from the town center. Locals come here to cool off in the afternoon, especially on weekends.",
-   reviews:[{name:"Marla D.", rating:5, text:"Perfect stop after visiting the capitol. Water was cold and clean.", date:"2026-05-02", status:"approved"}]},
+   reviews:[{id:1, firstName:"Marla", lastName:"D.", rating:5, text:"Perfect stop after visiting the capitol. Water was cold and clean.", date:"2026-05-02", status:"approved"}]},
   {id:2, name:"Magat Dam Viewdeck", municipality:"Aritao", category:"nature", lat:16.4230, lng:121.2350, contact:"0918-233-4410",
    blurb:"Sweeping view of the province's biggest dam and reservoir.",
    description:"One of the largest dams in the Philippines, the Magat Dam offers a wide viewdeck overlooking the reservoir and the mountains beyond. Best visited early morning when the water is calm.",
    reviews:[]},
-   
   {id:3, name:"Kayapa Vegetable Terraces", municipality:"Kayapa", category:"nature", lat:16.3667, lng:120.8667, contact:"0919-556-7781",
    blurb:"Cool highland terraces often called the 'Baguio of Nueva Vizcaya.'",
    description:"Kayapa sits at a higher elevation than most of the province, giving it a cooler climate ideal for vegetable farming. The rolling terraces are especially scenic at sunrise.",
-   reviews:[{name:"Joseph T.", rating:4, text:"Bring a jacket, it actually gets cold here at night.", date:"2026-04-18", status:"approved"}]},
+   reviews:[{id:2, firstName:"Joseph", lastName:"T.", rating:4, text:"Bring a jacket, it actually gets cold here at night.", date:"2026-04-18", status:"approved"}]},
   {id:4, name:"Bintawan Ecopark", municipality:"Villaverde", category:"nature", lat:16.6260, lng:121.2600, contact:"0920-771-2290",
    blurb:"River-side ecopark with camping grounds along the Villaverde Trail.",
    description:"A quiet ecopark along the historic Villaverde Trail, used by trekkers heading toward the Cordillera. Good for camping, river swimming, and short hikes.",
@@ -36,7 +55,7 @@ let listings = [
   {id:6, name:"St. Dominic Cathedral", municipality:"Bayombong", category:"heritage", lat:16.4850, lng:121.1470, contact:"078-321-2001",
    blurb:"19th-century Spanish-era cathedral at the heart of the capital.",
    description:"The Diocesan Shrine and Parish of St. Dominic de Guzman is one of the oldest churches in the province, built during the Spanish colonial period and still active today.",
-   reviews:[{name:"Anna R.", rating:5, text:"Beautiful old church, very well kept.", date:"2026-03-11", status:"approved"}]},
+   reviews:[{id:3, firstName:"Anna", lastName:"R.", rating:5, text:"Beautiful old church, very well kept.", date:"2026-03-11", status:"approved"}]},
   {id:7, name:"Bone Museum of Kasibu", municipality:"Kasibu", category:"heritage", lat:16.4500, lng:121.2100, contact:"0922-441-9987",
    blurb:"Small local museum on the Ifugao and Bugkalot heritage of the town.",
    description:"A community-run museum showcasing the indigenous heritage of Kasibu's Bugkalot and migrant Ifugao residents, with tools, weavings, and old photographs.",
@@ -48,7 +67,7 @@ let listings = [
   {id:9, name:"Ibulao Bridge & Roadside Grill", municipality:"Bagabag", category:"food", lat:16.6070, lng:121.2210, contact:"0924-336-5510",
    blurb:"Roadside grill spot known for fresh tilapia and river shrimp.",
    description:"A cluster of roadside eateries near the Ibulao Bridge, popular with travelers heading toward Ifugao. Known for grilled tilapia and fresh river shrimp caught locally.",
-   reviews:[{name:"Kevin S.", rating:4, text:"Cheap and filling, good rest stop.", date:"2026-05-20", status:"approved"}]},
+   reviews:[{id:4, firstName:"Kevin", lastName:"S.", rating:4, text:"Cheap and filling, good rest stop.", date:"2026-05-20", status:"approved"}]},
   {id:10, name:"Solano Public Market Food Row", municipality:"Solano", category:"food", lat:16.5333, lng:121.1833, contact:"0925-771-0091",
    blurb:"Home of Nueva Vizcaya's famous longganisa and pancit Cabagan-style dishes.",
    description:"The go-to spot for local delicacies, especially the province's famous garlicky longganisa. Best visited early morning when everything is freshly cooked.",
@@ -60,7 +79,7 @@ let listings = [
   {id:12, name:"Balete Homestay", municipality:"Kayapa", category:"accommodation", lat:16.3700, lng:120.8700, contact:"0927-114-7782",
    blurb:"Family-run homestay with vegetable garden views, ₱600/night.",
    description:"A modest homestay run by a farming family in Kayapa. Rooms are simple but clean, and guests are welcome to help harvest vegetables in the mornings.",
-   reviews:[{name:"Grace L.", rating:5, text:"Ate treated us like family. Would come back.", date:"2026-06-01", status:"approved"}]},
+   reviews:[{id:5, firstName:"Grace", lastName:"L.", rating:5, text:"Ate treated us like family. Would come back.", date:"2026-06-01", status:"approved"}]},
   {id:13, name:"Trailhead Inn Villaverde", municipality:"Villaverde", category:"accommodation", lat:16.6300, lng:121.2550, contact:"0928-556-9012",
    blurb:"Budget inn popular with hikers doing the Villaverde Trail.",
    description:"A no-frills inn catering to trekkers, offering early breakfast and trail info for those heading up toward the Cordillera range.",
@@ -68,7 +87,7 @@ let listings = [
   {id:14, name:"Casa Vizcaya Pasalubong Center", municipality:"Solano", category:"pasalubong", lat:16.5300, lng:121.1900, contact:"0929-330-1123",
    blurb:"One-stop pasalubong shop for local citrus wine and dried mangoes.",
    description:"A well-stocked pasalubong center selling local products including citrus wine, dried fruit, woven bags, and native delicacies from across the province.",
-   reviews:[{name:"Ferdie A.", rating:4, text:"Good variety, the citrus wine is a nice souvenir.", date:"2026-04-29", status:"approved"}]},
+   reviews:[{id:6, firstName:"Ferdie", lastName:"A.", rating:4, text:"Good variety, the citrus wine is a nice souvenir.", date:"2026-04-29", status:"approved"}]},
   {id:15, name:"Bambang Tupig House", municipality:"Bambang", category:"pasalubong", lat:16.4667, lng:121.1167, contact:"0930-771-4456",
    blurb:"Home of tupig — grilled rice cake wrapped in banana leaf.",
    description:"A small family business specializing in tupig, a local sticky rice delicacy grilled in banana leaves, sold fresh daily.",
@@ -76,10 +95,12 @@ let listings = [
 ];
 
 let pendingImageData = null;
+let pendingImageFile = null;
 
 function previewImage(e){
   const file = e.target.files[0];
   if(!file) return;
+  pendingImageFile = file;
   const reader = new FileReader();
   reader.onload = () => {
     pendingImageData = reader.result;
@@ -93,6 +114,7 @@ function renderImagePreview(src){
 }
 
 let nextId = 16;
+let nextReviewId = 7;
 let currentCategory = "all";
 let currentMuni = "all";
 let currentSearch = "";
@@ -102,13 +124,51 @@ let editingListingId = null;
 /* ============================================================
    INIT
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if(USE_SUPABASE){
+    await loadListingsFromSupabase();
+  }
   renderMuniStrip();
   populateMuniSelect();
   renderListings();
   renderAdminTable();
   updateStats();
 });
+
+async function loadListingsFromSupabase(){
+  try{
+    const { data: listingRows, error: listErr } = await supabaseClient.from('listings').select('*').order('id');
+    if(listErr) throw listErr;
+    const { data: reviewRows, error: revErr } = await supabaseClient.from('reviews').select('*').order('id');
+    if(revErr) throw revErr;
+
+    listings = listingRows.map(row => ({
+      id: row.id,
+      name: row.name,
+      municipality: row.municipality,
+      category: row.category,
+      lat: row.lat,
+      lng: row.lng,
+      contact: row.contact,
+      blurb: row.blurb,
+      description: row.description,
+      image: row.image_url,
+      reviews: reviewRows.filter(r => r.listing_id === row.id).map(r => ({
+        id: r.id,
+        firstName: r.first_name,
+        lastName: r.last_name,
+        rating: r.rating,
+        text: r.review_text,
+        date: (r.created_at || '').slice(0,10),
+        status: r.status
+      }))
+    }));
+    showToast('Loaded from Supabase');
+  }catch(err){
+    console.error('Supabase load failed, using demo data instead:', err);
+    showToast('Supabase load failed — using demo data');
+  }
+}
 
 /* ============================================================
    VIEW SWITCH
@@ -130,6 +190,9 @@ function renderMuniStrip(){
     html += `<button class="strip-pill" data-m="${m}" onclick="setMuni('${m}',this)">${m}</button>`;
   });
   strip.innerHTML = html;
+}
+function scrollMuniStrip(direction){
+  document.getElementById('muni-strip').scrollBy({left: direction * 240, behavior:'smooth'});
 }
 function setMuni(m, el){
   currentMuni = m;
@@ -249,7 +312,7 @@ function openDetail(id){
             approved.map(r=>`
             <div class="review-item">
               <div class="review-top">
-                <span class="review-name">${r.name}</span>
+                <span class="review-name">${r.firstName} ${r.lastName}</span>
                 <span class="review-date">${r.date}</span>
               </div>
               <div class="stars" style="margin-top:3px;">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
@@ -262,7 +325,10 @@ function openDetail(id){
           <div class="star-input" id="star-input">
             ${[1,2,3,4,5].map(n=>`<span data-val="${n}" onclick="setStars(${n})">★</span>`).join('')}
           </div>
-          <input type="text" id="review-name" placeholder="Your name">
+          <div style="display:flex;gap:10px;">
+            <input type="text" id="review-firstname" placeholder="First name" style="flex:1;">
+            <input type="text" id="review-lastname" placeholder="Last name" style="flex:1;">
+          </div>
           <textarea id="review-text" placeholder="Share what you liked, or what future visitors should know..."></textarea>
           <button class="btn-primary" onclick="submitReview(${l.id})">Submit review</button>
           <div class="form-msg" id="review-msg">Thanks! Your review is posted.</div>
@@ -283,22 +349,46 @@ function setStars(n){
     s.classList.toggle('on', parseInt(s.dataset.val) <= n);
   });
 }
-function submitReview(id){
-  const name = document.getElementById('review-name').value.trim();
+async function submitReview(id){
+  const firstName = document.getElementById('review-firstname').value.trim();
+  const lastName = document.getElementById('review-lastname').value.trim();
   const text = document.getElementById('review-text').value.trim();
-  if(!name || !text || selectedStars===0){
-    alert('Please add your name, a star rating, and a short review.');
+  if(!firstName || !lastName || !text || selectedStars===0){
+    alert('Please add your first name, last name, a star rating, and a short review.');
     return;
   }
   const l = listings.find(x=>x.id===id);
-  l.reviews.push({
-    name, rating:selectedStars, text,
+  const newReview = {
+    id: nextReviewId++,
+    firstName, lastName, rating:selectedStars, text,
     date:new Date().toISOString().slice(0,10),
     status:'pending'
-  });
+  };
+
+  if(USE_SUPABASE){
+    try{
+      const { data, error } = await supabaseClient.from('reviews').insert({
+        listing_id: id,
+        first_name: firstName,
+        last_name: lastName,
+        rating: selectedStars,
+        review_text: text,
+        status: 'pending'
+      }).select().single();
+      if(error) throw error;
+      newReview.id = data.id;
+      newReview.date = (data.created_at || newReview.date).slice(0,10);
+    }catch(err){
+      console.error('Failed to save review to Supabase:', err);
+      alert('Could not save your review to the server. It has been kept locally for this session only.');
+    }
+  }
+
+  l.reviews.push(newReview);
   document.getElementById('review-msg').textContent = "Thanks! Your review is submitted and will appear once approved.";
   document.getElementById('review-msg').classList.add('show');
-  document.getElementById('review-name').value='';
+  document.getElementById('review-firstname').value='';
+  document.getElementById('review-lastname').value='';
   document.getElementById('review-text').value='';
   selectedStars=0;
   document.querySelectorAll('#star-input span').forEach(s=>s.classList.remove('on'));
@@ -370,8 +460,8 @@ function renderModTab(){
   const wrap = document.getElementById('mod-list');
   let pending = [];
   listings.forEach(l=>{
-    l.reviews.forEach((r,idx)=>{
-      if(r.status==='pending') pending.push({listing:l, review:r, idx});
+    l.reviews.forEach(r=>{
+      if(r.status==='pending') pending.push({listing:l, review:r});
     });
   });
   if(pending.length===0){
@@ -381,19 +471,37 @@ function renderModTab(){
   wrap.innerHTML = pending.map(p=>`
     <div class="mod-row">
       <div>
-        <strong>${p.review.name}</strong> · <span class="stars">${"★".repeat(p.review.rating)}${"☆".repeat(5-p.review.rating)}</span>
+        <strong>${p.review.firstName} ${p.review.lastName}</strong> · <span class="stars">${"★".repeat(p.review.rating)}${"☆".repeat(5-p.review.rating)}</span>
         <div style="font-size:0.78rem;color:var(--river-500);margin-top:2px;">on ${p.listing.name}, ${p.listing.municipality}</div>
         <p class="mod-review-text">${p.review.text}</p>
       </div>
       <div class="row-actions">
-        <button class="icon-btn" onclick="moderateReview(${p.listing.id},${p.idx},'approved')">Approve</button>
-        <button class="icon-btn danger" onclick="moderateReview(${p.listing.id},${p.idx},'rejected')">Reject</button>
+        <button class="icon-btn" onclick="moderateReview(${p.listing.id},${p.review.id},'approved')">Approve</button>
+        <button class="icon-btn danger" onclick="moderateReview(${p.listing.id},${p.review.id},'rejected')">Reject</button>
       </div>
     </div>
   `).join('');
 }
-function moderateReview(listingId, idx, status){
+async function moderateReview(listingId, reviewId, status){
   const l = listings.find(x=>x.id===listingId);
+  const idx = l.reviews.findIndex(r=>r.id===reviewId);
+  if(idx===-1) return;
+
+  if(USE_SUPABASE){
+    try{
+      if(status==='rejected'){
+        const { error } = await supabaseClient.from('reviews').delete().eq('id', reviewId);
+        if(error) throw error;
+      } else {
+        const { error } = await supabaseClient.from('reviews').update({ status }).eq('id', reviewId);
+        if(error) throw error;
+      }
+    }catch(err){
+      console.error('Failed to update review in Supabase:', err);
+      alert('Could not update this review on the server. The change is reflected locally only.');
+    }
+  }
+
   if(status==='rejected'){ l.reviews.splice(idx,1); }
   else { l.reviews[idx].status = status; }
   renderModTab();
@@ -413,6 +521,7 @@ function populateMuniSelect(){
 function openListingForm(id){
   editingListingId = id || null;
   document.getElementById('f-image').value = '';
+  pendingImageFile = null;
   if(id){
     const l = listings.find(x=>x.id===id);
     document.getElementById('form-title').textContent = 'Edit listing';
@@ -441,7 +550,16 @@ function openListingForm(id){
 function closeListingForm(){
   document.getElementById('form-overlay').classList.remove('show');
 }
-function saveListing(){
+async function uploadImageToStorage(file, listingNameHint){
+  const ext = file.name.split('.').pop();
+  const path = `${Date.now()}-${listingNameHint.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.${ext}`;
+  const { error: uploadErr } = await supabaseClient.storage.from('listing-photos').upload(path, file);
+  if(uploadErr) throw uploadErr;
+  const { data } = supabaseClient.storage.from('listing-photos').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function saveListing(){
   const name = document.getElementById('f-name').value.trim();
   const municipality = document.getElementById('f-muni').value;
   const category = document.getElementById('f-cat').value;
@@ -456,12 +574,39 @@ function saveListing(){
     return;
   }
 
-  if(editingListingId){
+  let imageUrl = pendingImageData; // base64 fallback for non-Supabase / demo mode
+
+  if(USE_SUPABASE){
+    try{
+      if(pendingImageFile){
+        imageUrl = await uploadImageToStorage(pendingImageFile, name);
+      }
+      if(editingListingId){
+        const { error } = await supabaseClient.from('listings').update({
+          name, municipality, category, lat, lng, contact, blurb, description, image_url: imageUrl
+        }).eq('id', editingListingId);
+        if(error) throw error;
+      } else {
+        const { data, error } = await supabaseClient.from('listings').insert({
+          name, municipality, category, lat, lng, contact, blurb, description, image_url: imageUrl
+        }).select().single();
+        if(error) throw error;
+        editingListingId = data.id; // so the local-state block below can reuse the same path
+        nextId = Math.max(nextId, data.id + 1);
+      }
+    }catch(err){
+      console.error('Failed to save listing to Supabase:', err);
+      alert('Could not save this listing to the server. It has been kept locally for this session only.');
+    }
+  }
+
+  if(editingListingId && listings.some(x=>x.id===editingListingId)){
     const l = listings.find(x=>x.id===editingListingId);
-    Object.assign(l, {name, municipality, category, lat, lng, contact, blurb, description, image:pendingImageData});
+    Object.assign(l, {name, municipality, category, lat, lng, contact, blurb, description, image:imageUrl});
     showToast('Listing updated');
   } else {
-    listings.push({id:nextId++, name, municipality, category, lat, lng, contact, blurb, description:description||blurb, image:pendingImageData, reviews:[]});
+    const newId = editingListingId || nextId++;
+    listings.push({id:newId, name, municipality, category, lat, lng, contact, blurb, description:description||blurb, image:imageUrl, reviews:[]});
     showToast('Listing added');
   }
   closeListingForm();
@@ -469,8 +614,20 @@ function saveListing(){
   renderListings();
   updateStats();
 }
-function deleteListing(id){
+
+async function deleteListing(id){
   if(!confirm('Delete this listing? This cannot be undone.')) return;
+
+  if(USE_SUPABASE){
+    try{
+      const { error } = await supabaseClient.from('listings').delete().eq('id', id);
+      if(error) throw error;
+    }catch(err){
+      console.error('Failed to delete listing from Supabase:', err);
+      alert('Could not delete this listing from the server. It has been removed locally only.');
+    }
+  }
+
   listings = listings.filter(x=>x.id!==id);
   renderAdminTable();
   renderListings();

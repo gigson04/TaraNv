@@ -7,7 +7,7 @@
   --gold-500:#DAA520;
   --clay-500:#B5502D;
   --clay-400:#C9714F;
-  --river-500:#155870;
+  --river-500:#4A7A8C;
   --mist-100:#F3EEE1;
   --mist-50:#FAF7EF;
   --ink-900:#232019;
@@ -180,9 +180,23 @@ button{font-family:inherit;cursor:pointer;}
 
 /* ============ MUNICIPALITY STRIP ============ */
 .strip-section{background:var(--mist-50);border-bottom:1px solid var(--line);padding:18px 0;}
+.strip-wrap{display:flex;align-items:center;gap:8px;padding:0 12px;}
+.strip-arrow{
+  flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--mist-100);
+  color:var(--pine-800);
+  font-size:1.3rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.strip-arrow:hover{background:var(--pine-800);color:var(--mist-50);border-color:var(--pine-800);}
 .strip{
-  display:flex;gap:10px;overflow-x:auto;padding:0 28px;
+  display:flex;gap:10px;overflow-x:auto;padding:0 16px;
   scrollbar-width:none;
+  scroll-behavior:smooth;
+  flex:1;
 }
 .strip::-webkit-scrollbar{display:none;}
 .strip-pill{
@@ -199,6 +213,11 @@ button{font-family:inherit;cursor:pointer;}
 }
 .strip-pill:hover{border-color:var(--river-500);color:var(--ink-900);}
 .strip-pill.active{background:var(--pine-800);color:var(--mist-50);border-color:var(--pine-800);}
+
+@media (max-width:640px){
+  .strip-arrow{display:none;}
+  .strip-wrap{padding:0;}
+}
 
 /* ============ SECTION HEADERS ============ */
 .section{max-width:1200px;margin:0 auto;padding:64px 28px;}

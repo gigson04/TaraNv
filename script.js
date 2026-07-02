@@ -20,6 +20,7 @@ let listings = [
    blurb:"Sweeping view of the province's biggest dam and reservoir.",
    description:"One of the largest dams in the Philippines, the Magat Dam offers a wide viewdeck overlooking the reservoir and the mountains beyond. Best visited early morning when the water is calm.",
    reviews:[]},
+   
   {id:3, name:"Kayapa Vegetable Terraces", municipality:"Kayapa", category:"nature", lat:16.3667, lng:120.8667, contact:"0919-556-7781",
    blurb:"Cool highland terraces often called the 'Baguio of Nueva Vizcaya.'",
    description:"Kayapa sits at a higher elevation than most of the province, giving it a cooler climate ideal for vegetable farming. The rolling terraces are especially scenic at sunrise.",

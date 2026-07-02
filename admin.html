@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tara, NV! — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="mark">NV</div>
+    <span>Tara, NV! <span style="font-size:0.7rem;font-weight:500;opacity:0.7;">Admin</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">View public site ↗</a>
+  </div>
+</nav>
+
+<div id="no-supabase-banner" style="display:none;background:#B5502D;color:#fff;text-align:center;padding:10px 20px;font-size:0.85rem;">
+  Supabase isn't connected yet — anything you add here will <strong>not</strong> appear on the public site (index.html) and will reset on refresh. See <span class="mono">schema.sql</span> to connect a real database.
+</div>
+
+<!-- ============ ADMIN VIEW ============ -->
+<div id="admin-view">
+  <div class="admin-gate" id="admin-gate">
+    <h2>Admin sign in</h2>
+    <p>This area is for the Tourism Office and listing managers only.</p>
+    <input type="password" id="admin-pass" placeholder="Enter access code" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button class="btn-primary" style="width:100%" onclick="checkAdmin()">Enter admin panel</button>
+    <div class="admin-hint">Prototype code: <strong>letsgo</strong></div>
+  </div>
+
+  <div class="admin-panel" id="admin-panel">
+    <div class="admin-header">
+      <div>
+        <div class="eyebrow">Admin</div>
+        <h2>Listings &amp; reviews management</h2>
+      </div>
+      <button class="btn-add" onclick="openListingForm()">+ Add listing</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total listings</div></div>
+      <div class="stat-card"><div class="num" id="stat-munis">15</div><div class="lbl">Municipalities</div></div>
+      <div class="stat-card"><div class="num" id="stat-reviews">0</div><div class="lbl">Total reviews</div></div>
+      <div class="stat-card"><div class="num" id="stat-pending">0</div><div class="lbl">Pending moderation</div></div>
+    </div>
+
+    <div class="admin-tabs">
+      <div class="admin-tab active" id="tab-listings" onclick="setAdminTab('listings')">Listings</div>
+      <div class="admin-tab" id="tab-reviews" onclick="setAdminTab('reviews')">Reviews <span class="pending-badge" id="tab-pending-badge">0</span></div>
+    </div>
+
+    <div id="admin-listings-tab">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Photo</th><th>Name</th><th>Municipality</th><th>Category</th><th>Rating</th><th>Reviews</th><th>Actions</th></tr></thead>
+          <tbody id="admin-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admin-reviews-tab" style="display:none;">
+      <div class="table-wrap" id="mod-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LISTING FORM MODAL ============ -->
+<div class="overlay" id="form-overlay" onclick="if(event.target===this)closeListingForm()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeListingForm()">✕</button>
+    <div class="modal-content">
+      <div class="eyebrow" id="form-title-eyebrow">New listing</div>
+      <h2 id="form-title">Add a listing</h2>
+      <div class="form-grid" style="margin-top:20px;">
+        <div class="full">
+          <label class="field-label">Place name</label>
+          <input type="text" id="f-name" placeholder="e.g. Sitio Nagbat Falls">
+        </div>
+        <div>
+          <label class="field-label">Municipality</label>
+          <select id="f-muni"></select>
+        </div>
+        <div>
+          <label class="field-label">Category</label>
+          <select id="f-cat">
+            <option value="nature">Nature</option>
+            <option value="heritage">Heritage</option>
+            <option value="food">Food</option>
+            <option value="accommodation">Accommodation</option>
+            <option value="pasalubong">Pasalubong</option>
+          </select>
+        </div>
+        <div class="full">
+          <label class="field-label">Google Maps link</label>
+          <input type="text" id="f-mapslink" placeholder="Paste the full Google Maps link (e.g. https://maps.app.goo.gl/xxxx or https://www.google.com/maps/place/...)">
+          <div style="font-size:0.72rem;color:var(--ink-600);margin-top:6px;">Open the place in Google Maps, tap Share, copy the link, and paste it here.</div>
+        </div>
+        <div class="full">
+          <label class="field-label">Photo</label>
+          <input type="file" id="f-image" accept="image/*" onchange="previewImage(event)">
+          <div id="image-preview-wrap"></div>
+          <div style="font-size:0.72rem;color:var(--ink-600);margin-top:6px;">Uploaded to Supabase Storage when connected — otherwise kept in this browser session only.</div>
+        </div>
+        <div class="full">
+          <label class="field-label">Contact number</label>
+          <input type="text" id="f-contact" placeholder="09XX-XXX-XXXX">
+        </div>
+        <div class="full">
+          <label class="field-label">Short blurb (shows on card)</label>
+          <input type="text" id="f-blurb" placeholder="One line description">
+        </div>
+        <div class="full">
+          <label class="field-label">Full description</label>
+          <textarea id="f-desc" rows="3" placeholder="Describe the place for travelers..."></textarea>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;">
+        <button class="btn-primary" onclick="saveListing()">Save listing</button>
+        <button class="icon-btn" onclick="closeListingForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toast-msg">Saved</span></div>
+
+<script src="shared.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

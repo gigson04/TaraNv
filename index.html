@@ -18,10 +18,9 @@
     <span>Tara, NV!</span>
   </div>
   <div class="nav-links">
-    <a onclick="showView('explore')" class="active" id="nav-explore">Explore</a>
-    <a onclick="showView('explore');document.getElementById('municipalities-section').scrollIntoView({behavior:'smooth'})">Municipalities</a>
+    <a onclick="document.getElementById('listings-section').scrollIntoView({behavior:'smooth'})">Explore</a>
+    <a onclick="document.getElementById('municipalities-section').scrollIntoView({behavior:'smooth'})">Municipalities</a>
   </div>
-  <button class="admin-toggle" onclick="showView('admin')">🔒 Admin</button>
 </nav>
 
 <!-- ============ EXPLORE VIEW ============ -->
@@ -33,7 +32,7 @@
         <div>
           <div class="eyebrow">Cagayan Valley · Philippines</div>
           <h1>Everything worth<br>finding in <em>Nueva Vizcaya.</em></h1>
-          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong — organized by municipality, with the map pin and contact number already attached.</p>
+          <p class="hero-sub">Nature spots, homestays, heritage sites, food, and pasalubong — organized by municipality, with the map link and contact number already attached.</p>
         </div>
       </div>
 
@@ -89,120 +88,14 @@
   </footer>
 </div>
 
-<!-- ============ ADMIN VIEW ============ -->
-<div id="admin-view">
-  <div class="admin-gate" id="admin-gate">
-    <h2>Admin sign in</h2>
-    <p>This area is for the Tourism Office and listing managers only.</p>
-    <input type="password" id="admin-pass" placeholder="Enter access code" onkeydown="if(event.key==='Enter')checkAdmin()">
-    <button class="btn-primary" style="width:100%" onclick="checkAdmin()">Enter admin panel</button>
-    <div class="admin-hint">Prototype code: <strong>letsgo</strong></div>
-  </div>
-
-  <div class="admin-panel" id="admin-panel">
-    <div class="admin-header">
-      <div>
-        <div class="eyebrow">Admin</div>
-        <h2>Listings &amp; reviews management</h2>
-      </div>
-      <button class="btn-add" onclick="openListingForm()">+ Add listing</button>
-    </div>
-
-    <div class="admin-stats">
-      <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total listings</div></div>
-      <div class="stat-card"><div class="num" id="stat-munis">15</div><div class="lbl">Municipalities</div></div>
-      <div class="stat-card"><div class="num" id="stat-reviews">0</div><div class="lbl">Total reviews</div></div>
-      <div class="stat-card"><div class="num" id="stat-pending">0</div><div class="lbl">Pending moderation</div></div>
-    </div>
-
-    <div class="admin-tabs">
-      <div class="admin-tab active" id="tab-listings" onclick="setAdminTab('listings')">Listings</div>
-      <div class="admin-tab" id="tab-reviews" onclick="setAdminTab('reviews')">Reviews <span class="pending-badge" id="tab-pending-badge">0</span></div>
-    </div>
-
-    <div id="admin-listings-tab">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Photo</th><th>Name</th><th>Municipality</th><th>Category</th><th>Rating</th><th>Reviews</th><th>Actions</th></tr></thead>
-          <tbody id="admin-table-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-reviews-tab" style="display:none;">
-      <div class="table-wrap" id="mod-list"></div>
-    </div>
-  </div>
-</div>
-
 <!-- ============ DETAIL MODAL ============ -->
 <div class="overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
   <div class="modal" id="detail-modal"></div>
 </div>
 
-<!-- ============ LISTING FORM MODAL ============ -->
-<div class="overlay" id="form-overlay" onclick="if(event.target===this)closeListingForm()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeListingForm()">✕</button>
-    <div class="modal-content">
-      <div class="eyebrow" id="form-title-eyebrow">New listing</div>
-      <h2 id="form-title">Add a listing</h2>
-      <div class="form-grid" style="margin-top:20px;">
-        <div class="full">
-          <label class="field-label">Place name</label>
-          <input type="text" id="f-name" placeholder="e.g. Sitio Nagbat Falls">
-        </div>
-        <div>
-          <label class="field-label">Municipality</label>
-          <select id="f-muni"></select>
-        </div>
-        <div>
-          <label class="field-label">Category</label>
-          <select id="f-cat">
-            <option value="nature">Nature</option>
-            <option value="heritage">Heritage</option>
-            <option value="food">Food</option>
-            <option value="accommodation">Accommodation</option>
-            <option value="pasalubong">Pasalubong</option>
-          </select>
-        </div>
-        <div>
-          <label class="field-label">Latitude</label>
-          <input type="text" id="f-lat" placeholder="16.4833">
-        </div>
-        <div>
-          <label class="field-label">Longitude</label>
-          <input type="text" id="f-lng" placeholder="121.1500">
-        </div>
-        <div class="full">
-          <label class="field-label">Photo</label>
-          <input type="file" id="f-image" accept="image/*" onchange="previewImage(event)">
-          <div id="image-preview-wrap"></div>
-          <div style="font-size:0.72rem;color:var(--ink-600);margin-top:6px;">Stored in this browser session only — for a real deployment this would upload to Supabase storage.</div>
-        </div>
-        <div class="full">
-          <label class="field-label">Contact number</label>
-          <input type="text" id="f-contact" placeholder="09XX-XXX-XXXX">
-        </div>
-        <div class="full">
-          <label class="field-label">Short blurb (shows on card)</label>
-          <input type="text" id="f-blurb" placeholder="One line description">
-        </div>
-        <div class="full">
-          <label class="field-label">Full description</label>
-          <textarea id="f-desc" rows="3" placeholder="Describe the place for travelers..."></textarea>
-        </div>
-      </div>
-      <div style="margin-top:18px;display:flex;gap:10px;">
-        <button class="btn-primary" onclick="saveListing()">Save listing</button>
-        <button class="icon-btn" onclick="closeListingForm()">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"><span class="dot"></span><span id="toast-msg">Saved</span></div>
 
-<script src="script.js"></script>
+<script src="shared.js"></script>
+<script src="public.js"></script>
 </body>
 </html>

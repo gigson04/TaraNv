@@ -385,7 +385,6 @@ footer{
 footer .mono{color:rgba(250,247,239,0.4);}
 
 /* ============ ADMIN VIEW ============ */
-#admin-view{display:none;}
 .admin-gate{
   max-width:400px;margin:80px auto;padding:36px 32px;background:var(--mist-50);
   border:1px solid var(--line);border-radius:6px;text-align:center;

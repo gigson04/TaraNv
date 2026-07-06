@@ -135,7 +135,7 @@ function openDetail(id){
             <div class="review-item">
               <div class="review-top">
                 <span class="review-name">${r.firstName} ${r.lastName}</span>
-                <span class="review-date">${r.date}</span>
+                <span class="review-date">${r.date}</span> 
               </div>
               <div class="stars" style="margin-top:3px;">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
               <p class="review-text">${r.text}</p>

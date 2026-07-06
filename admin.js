@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function checkAdmin(){
   const val = document.getElementById('admin-pass').value;
-  if(val === 'letsgo'){
+  if(val === 'letsgo'){ // Password is hardcoded for demo purposes; in a real app, this should be handled securely on the server
     document.getElementById('admin-gate').style.display='none';
     document.getElementById('admin-panel').classList.add('show');
     initAdminPanel();

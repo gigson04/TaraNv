@@ -19,6 +19,7 @@
   </div>
   <div class="nav-links">
     <a href="index.html">View public site ↗</a>
+    <a onclick="adminSignOut()" id="logout-link" style="display:none;">Log out</a>
   </div>
 </nav>
 
@@ -31,9 +32,10 @@
   <div class="admin-gate" id="admin-gate">
     <h2>Admin sign in</h2>
     <p>This area is for the Tourism Office and listing managers only.</p>
-    <input type="password" id="admin-pass" placeholder="Enter access code" onkeydown="if(event.key==='Enter')checkAdmin()">
-    <button class="btn-primary" style="width:100%" onclick="checkAdmin()">Enter admin panel</button>
-    <!-- <div class="admin-hint">Prototype code: <strong>letsgo</strong></div> -->
+    <input type="email" id="admin-email" placeholder="Email" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <input type="password" id="admin-pass" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button class="btn-primary" style="width:100%" onclick="checkAdmin()">Sign in</button>
+    <div class="admin-hint" id="admin-error" style="color:var(--clay-500);display:none;"></div>
   </div>
 
   <div class="admin-panel" id="admin-panel">

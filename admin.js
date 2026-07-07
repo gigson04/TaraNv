@@ -12,20 +12,54 @@ let editingListingId = null;
 document.addEventListener('DOMContentLoaded', async () => {
   if(!USE_SUPABASE){
     document.getElementById('no-supabase-banner').style.display = 'block';
+    return;
+  }
+  // If already signed in from a previous visit, skip the gate
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session){
+    showAdminPanel();
   }
 });
 
-function checkAdmin(){
-  const val = document.getElementById('admin-pass').value;
-  if(val === 'letsgo'){ // Password is hardcoded for demo purposes; in a real app, this should be handled securely on the server
-    document.getElementById('admin-gate').style.display='none';
-    document.getElementById('admin-panel').classList.add('show');
-    initAdminPanel();
-  } else {
-    document.getElementById('admin-pass').style.borderColor = 'var(--clay-500)';
-    document.getElementById('admin-pass').value='';
-    document.getElementById('admin-pass').placeholder='Incorrect code — try again';
+async function checkAdmin(){
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-pass').value;
+  const errorBox = document.getElementById('admin-error');
+  errorBox.style.display = 'none';
+
+  if(!USE_SUPABASE){
+    errorBox.textContent = 'Supabase isn\'t connected yet, so real sign-in isn\'t available. See schema.sql to connect a database and create an admin user.';
+    errorBox.style.display = 'block';
+    return;
   }
+  if(!email || !password){
+    errorBox.textContent = 'Please enter both email and password.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if(error){
+    errorBox.textContent = 'Sign in failed: ' + error.message;
+    errorBox.style.display = 'block';
+    document.getElementById('admin-pass').value = '';
+    return;
+  }
+  showAdminPanel();
+}
+
+function showAdminPanel(){
+  document.getElementById('admin-gate').style.display='none';
+  document.getElementById('admin-panel').classList.add('show');
+  document.getElementById('logout-link').style.display = '';
+  initAdminPanel();
+}
+
+async function adminSignOut(){
+  if(USE_SUPABASE){
+    await supabaseClient.auth.signOut();
+  }
+  location.reload();
 }
 
 async function initAdminPanel(){

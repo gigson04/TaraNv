@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     showAdminPanel();
   }
 });
-
+// Handle sign-in form submission
 async function checkAdmin(){
   const email = document.getElementById('admin-email').value.trim();
   const password = document.getElementById('admin-pass').value;

@@ -1,6 +1,7 @@
 /* ============================================================
    PUBLIC SITE LOGIC (index.html)
    Relies on shared.js being loaded first (config, data, utilities)
+   
    ============================================================ */
 let currentCategory = "all";
 let currentMuni = "all";
